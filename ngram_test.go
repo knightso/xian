@@ -1,7 +1,6 @@
 package xian
 
 import (
-	"log"
 	"testing"
 )
 
@@ -17,9 +16,6 @@ func TestToUnigrams(t *testing.T) {
 	if len(result) != 7 {
 		t.Errorf("len(result) exected:%d, but was:%d\n", 7, len(result))
 	}
-
-	log.Println("1111")
-	log.Println(result)
 
 	if !result['a'] {
 		t.Errorf("Unigram notfound. 'a'")
@@ -49,9 +45,6 @@ func TestToBigrams(t *testing.T) {
 	if len(result) != 9 {
 		t.Errorf("len(result) exected:%d, but was:%d\n", 9, len(result))
 	}
-
-	log.Println("2222")
-	log.Println(result)
 
 	assertBigram(t, result, bigram{'a', 'b'})
 	assertBigram(t, result, bigram{'b', 'c'})
