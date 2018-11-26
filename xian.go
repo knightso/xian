@@ -45,15 +45,28 @@ func Bigrams(s string) []string {
 
 // Prefixes returns prefix tokens from s.
 func Prefixes(s string) []string {
-	tokens := make([]string, 0, 32)
+	prefixes := make(map[string]struct{})
 
-	for _, w := range strings.Split(s, " ") {
+	runes := make([]rune, 0, 64)
+
+	for _, w := range strings.Split(strings.ToLower(s), " ") {
 		if w == "" {
 			continue
 		}
-		for i := 1; i <= len(w); i++ {
-			tokens = append(tokens, w[0:i])
+
+		runes = runes[0:0]
+
+		for _, c := range w {
+			runes = append(runes, c)
+			prefixes[string(runes)] = struct{}{}
 		}
 	}
+
+	tokens := make([]string, 0, 32)
+
+	for pref := range prefixes {
+		tokens = append(tokens, pref)
+	}
+
 	return tokens
 }
