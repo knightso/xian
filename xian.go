@@ -2,71 +2,47 @@ package xian
 
 import (
 	"fmt"
-	"strings"
+	"sort"
 )
 
-// Indexes is extra indexes for datastore query.
-type Indexes map[string][]string
+const (
+	// IndexNoFilters is an index to be used for no-filters
+	IndexNoFilters = "__NoFilters__"
+)
 
-// NewIndexes returns a new Indexes.
-func NewIndexes() Indexes {
-	return make(Indexes)
+// Config describe extra indexes configuration.
+type Config struct {
+	// CompositeIdxLabels is a label list which defines composit indexes to improve the search performance
+	CompositeIdxLabels []string
+	// IgnoreCase defines whether to ignore case on search
+	IgnoreCase bool
+	// SaveNoFilterIndex defines whether to save IndexNoFilters index.
+	SaveNoFilterIndex bool
 }
 
-// Add adds new indexes with a lavel.
-func (idx Indexes) Add(label string, indexes ...string) {
-	idx[label] = append(idx[label], indexes...)
-}
+// DefaultConfig is default configuration.
+var DefaultConfig = &Config{}
 
-// Biunigrams returns bigram and unigram tokens from s.
-func Biunigrams(s string) []string {
-	tokens := make([]string, 0, 32)
+// buildIndexes builds indexes from m.
+// ms is map[label]tokens.
+func buildIndexes(m map[string][]string) []string {
+	idxSet := make(map[string]struct{})
 
-	for bigram := range toBigrams(strings.ToLower(s)) {
-		tokens = append(tokens, fmt.Sprintf("%c%c", bigram.a, bigram.b))
-	}
-	for unigram := range toUnigrams(strings.ToLower(s)) {
-		tokens = append(tokens, fmt.Sprintf("%c", unigram))
-	}
-
-	return tokens
-}
-
-// Bigrams returns bigram tokens from s.
-func Bigrams(s string) []string {
-	tokens := make([]string, 0, 32)
-
-	for bigram := range toBigrams(strings.ToLower(s)) {
-		tokens = append(tokens, fmt.Sprintf("%c%c", bigram.a, bigram.b))
-	}
-
-	return tokens
-}
-
-// Prefixes returns prefix tokens from s.
-func Prefixes(s string) []string {
-	prefixes := make(map[string]struct{})
-
-	runes := make([]rune, 0, 64)
-
-	for _, w := range strings.Split(strings.ToLower(s), " ") {
-		if w == "" {
-			continue
-		}
-
-		runes = runes[0:0]
-
-		for _, c := range w {
-			runes = append(runes, c)
-			prefixes[string(runes)] = struct{}{}
+	for label, tokens := range m {
+		for _, t := range tokens {
+			idxSet[fmt.Sprintf("%s %s", label, t)] = struct{}{}
 		}
 	}
 
-	tokens := make([]string, 0, 32)
+	// TODO: coposite index
 
-	for pref := range prefixes {
-		tokens = append(tokens, pref)
+	built := make([]string, 0, len(idxSet))
+
+	for idx := range idxSet {
+		built = append(built, idx)
 	}
 
-	return tokens
+	sort.Strings(built)
+
+	return built
 }
