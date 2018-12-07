@@ -66,8 +66,71 @@ func TestPrefixes(t *testing.T) {
 	assert(t, "result[8]", result[8], "dあいbCh")
 }
 
+func TestAddIndexAndFilter(t *testing.T) {
+	idx := NewIndexes(nil)
+	idx.Add("label1", "abc dあいbCh", "sample")
+
+	filter := NewFilters(nil)
+	filter.Add("label1", "abc dあいbCh", "sample")
+
+	builtIndexes := idx.Build()
+	builtFilters := filter.Build()
+
+	// filter の内容が全て index に存在すること
+	for _, builtFilter := range builtFilters {
+		if !containsString(builtIndexes, builtFilter) {
+			t.Errorf("filter: %s not contains", builtFilter)
+		}
+	}
+}
+
+func TestAddBigramsIndexAndFilter(t *testing.T) {
+	idx := NewIndexes(nil)
+	idx.AddBigrams("label1", "abc dあいbCh")
+
+	filter := NewFilters(nil)
+	filter.AddBigrams("label1", "dあいb") // idx の中間一致
+
+	builtIndexes := idx.Build()
+	builtFilters := filter.Build()
+
+	// filter の内容が全て index に存在すること
+	for _, builtFilter := range builtFilters {
+		if !containsString(builtIndexes, builtFilter) {
+			t.Errorf("filter: %s not contains", builtFilter)
+		}
+	}
+}
+
+func TestAddBiunigramsIndexAndFilter(t *testing.T) {
+	idx := NewIndexes(nil)
+	idx.AddBiunigrams("label1", "abc dあいbCh")
+
+	filter := NewFilters(nil)
+	filter.AddBiunigrams("label1", "dあいb") // idx の中間一致
+
+	builtIndexes := idx.Build()
+	builtFilters := filter.Build()
+
+	// filter の内容が全て index に存在すること
+	for _, builtFilter := range builtFilters {
+		if !containsString(builtIndexes, builtFilter) {
+			t.Errorf("filter: %s not contains", builtFilter)
+		}
+	}
+}
+
 func assert(t *testing.T, title string, actual, expected interface{}) {
 	if actual != expected {
 		t.Errorf("%s : unexpected, actual: `%v`, expected: `%v`", title, actual, expected)
 	}
+}
+
+func containsString(list []string, target string) bool {
+	for _, s := range list {
+		if s == target {
+			return true
+		}
+	}
+	return false
 }
