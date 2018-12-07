@@ -13,8 +13,8 @@ func TestString(t *testing.T) {
 
 func TestToUnigrams(t *testing.T) {
 	result := toUnigrams("abc dあいbCh")
-	if len(result) != 7 {
-		t.Errorf("len(result) exected:%d, but was:%d\n", 7, len(result))
+	if len(result) != 8 {
+		t.Errorf("len(result) exected:%d, but was:%d\n", 8, len(result))
 	}
 
 	if !result['a'] {
@@ -25,6 +25,9 @@ func TestToUnigrams(t *testing.T) {
 	}
 	if !result['c'] {
 		t.Errorf("Unigrbm notfound. 'c'")
+	}
+	if !result['C'] {
+		t.Errorf("Unigrbm notfound. 'C'")
 	}
 	if !result['d'] {
 		t.Errorf("Unigrbm notfound. 'd'")
@@ -51,10 +54,10 @@ func TestToBigrams(t *testing.T) {
 	assertBigram(t, result, bigram{'d', 'e'})
 	assertBigram(t, result, bigram{'e', 'b'})
 	assertBigram(t, result, bigram{'c', 'h'})
-	assertBigram(t, result, bigram{'i', 'j'})
-	assertBigram(t, result, bigram{'j', 'あ'})
+	assertBigram(t, result, bigram{'i', 'J'})
+	assertBigram(t, result, bigram{'J', 'あ'})
 	assertBigram(t, result, bigram{'あ', 'd'})
-	assertBigram(t, result, bigram{'e', 'n'})
+	assertBigram(t, result, bigram{'e', 'N'})
 }
 
 func assertBigram(t *testing.T, set map[bigram]bool, bigram bigram) {
