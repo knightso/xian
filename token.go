@@ -17,10 +17,10 @@ func (b *bigram) String() string {
 func Biunigrams(s string) []string {
 	tokens := make([]string, 0, 32)
 
-	for bigram := range toBigrams(strings.ToLower(s)) {
+	for bigram := range toBigrams(s) {
 		tokens = append(tokens, fmt.Sprintf("%c%c", bigram.a, bigram.b))
 	}
-	for unigram := range toUnigrams(strings.ToLower(s)) {
+	for unigram := range toUnigrams(s) {
 		tokens = append(tokens, fmt.Sprintf("%c", unigram))
 	}
 
@@ -31,7 +31,7 @@ func Biunigrams(s string) []string {
 func Bigrams(s string) []string {
 	tokens := make([]string, 0, 32)
 
-	for bigram := range toBigrams(strings.ToLower(s)) {
+	for bigram := range toBigrams(s) {
 		tokens = append(tokens, fmt.Sprintf("%c%c", bigram.a, bigram.b))
 	}
 
@@ -44,7 +44,7 @@ func Prefixes(s string) []string {
 
 	runes := make([]rune, 0, 64)
 
-	for _, w := range strings.Split(strings.ToLower(s), " ") {
+	for _, w := range strings.Split(s, " ") {
 		if w == "" {
 			continue
 		}
@@ -69,7 +69,7 @@ func Prefixes(s string) []string {
 func toBigrams(value string) map[bigram]bool {
 	result := make(map[bigram]bool)
 	var prev rune
-	for i, r := range strings.ToLower(value) {
+	for i, r := range value {
 		if i > 0 && prev != ' ' && r != ' ' {
 			result[bigram{prev, r}] = true
 		}
@@ -80,7 +80,7 @@ func toBigrams(value string) map[bigram]bool {
 
 func toUnigrams(value string) map[rune]bool {
 	result := make(map[rune]bool)
-	for _, r := range strings.ToLower(value) {
+	for _, r := range value {
 		if r == ' ' {
 			continue
 		}
