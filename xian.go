@@ -39,7 +39,7 @@ func buildIndexes(m map[string][]string, lavelsToExclude []string) []string {
 	}
 
 	for label, tokens := range m {
-		if _, ok := excludeSet[label]; !ok {
+		if _, ok := excludeSet[label]; ok {
 			continue
 		}
 		for _, t := range tokens {
