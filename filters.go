@@ -53,9 +53,14 @@ func (filters *Filters) AddSomething(label string, indexes interface{}) *Filters
 // Build builds indexes to save.
 func (filters *Filters) Build() []string {
 
-	built := buildIndexes(filters.m)
+	built := buildIndexes(filters.m, filters.conf.CompositeIdxLabels)
 
-	if filters.conf.SaveNoFilterIndex && len(built) == 0 {
+	if len(filters.conf.CompositeIdxLabels) > 1 {
+		ci := createCompositeIndexes(filters.conf.CompositeIdxLabels, filters.m)
+		built = append(built, ci...)
+	}
+
+	if filters.conf.SaveNoFiltersIndex && len(built) == 0 {
 		built = append(built, IndexNoFilters)
 	}
 

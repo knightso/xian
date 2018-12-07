@@ -50,9 +50,14 @@ func (idxs *Indexes) AddSomething(label string, indexes interface{}) *Indexes {
 // Build builds indexes to save.
 func (idxs Indexes) Build() []string {
 
-	built := buildIndexes(idxs.m)
+	built := buildIndexes(idxs.m, nil)
 
-	if idxs.conf.SaveNoFilterIndex {
+	if len(idxs.conf.CompositeIdxLabels) > 1 {
+		ci := createCompositeIndexes(idxs.conf.CompositeIdxLabels, idxs.m)
+		built = append(built, ci...)
+	}
+
+	if idxs.conf.SaveNoFiltersIndex {
 		built = append(built, IndexNoFilters)
 	}
 
