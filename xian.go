@@ -30,11 +30,11 @@ var DefaultConfig = &Config{}
 
 // buildIndexes builds indexes from m.
 // m is map[label]tokens.
-func buildIndexes(m map[string][]string, lavelsToExclude []string) []string {
+func buildIndexes(m map[string][]string, labelsToExclude []string) []string {
 	idxSet := make(map[string]struct{})
 
 	excludeSet := make(map[string]struct{})
-	for _, l := range lavelsToExclude {
+	for _, l := range labelsToExclude {
 		excludeSet[l] = struct{}{}
 	}
 
@@ -58,7 +58,7 @@ func buildIndexes(m map[string][]string, lavelsToExclude []string) []string {
 	return built
 }
 
-// createCompositeIndexes creates composite indexes of lavels from m.
+// createCompositeIndexes creates composite indexes of labels from m.
 // It reduces zig-zag merge join latency
 // m is map[label]tokens.
 func createCompositeIndexes(labels []string, m map[string][]string) []string {
@@ -91,7 +91,6 @@ func createCompositeIndexes(labels []string, m map[string][]string) []string {
 				// no process bit for the combi.
 				prevF(combi, index)
 			}
-
 		}
 	}
 
