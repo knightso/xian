@@ -1,6 +1,7 @@
 package xian
 
 import (
+	"strings"
 	"unicode/utf8"
 )
 
@@ -24,9 +25,14 @@ func NewFilters(config *Config) *Filters {
 // Add adds new filters with a label.
 func (filters *Filters) Add(label string, indexes ...string) *Filters {
 	for _, idx := range indexes {
+		if filters.conf.IgnoreCase {
+			idx = strings.ToLower(idx)
+		}
+
 		if _, ok := filters.m[label]; !ok {
 			filters.m[label] = make(map[string]struct{})
 		}
+
 		filters.m[label][idx] = struct{}{}
 	}
 	return filters

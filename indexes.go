@@ -1,5 +1,7 @@
 package xian
 
+import "strings"
+
 // Indexes is extra indexes for datastore query.
 type Indexes struct {
 	m    indexesMap // key=label, value=indexes
@@ -20,9 +22,14 @@ func NewIndexes(config *Config) *Indexes {
 // Add adds new indexes with a label.
 func (idxs *Indexes) Add(label string, indexes ...string) *Indexes {
 	for _, idx := range indexes {
+		if idxs.conf.IgnoreCase {
+			idx = strings.ToLower(idx)
+		}
+
 		if _, ok := idxs.m[label]; !ok {
 			idxs.m[label] = make(map[string]struct{})
 		}
+
 		idxs.m[label][idx] = struct{}{}
 	}
 	return idxs
