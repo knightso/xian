@@ -6,7 +6,7 @@ import (
 
 // Filters is filters builder for extra indexes.
 type Filters struct {
-	m    map[string][]string // key=label, value=indexes
+	m    indexesMap // key=label, value=index set
 	conf *Config
 }
 
@@ -16,14 +16,19 @@ func NewFilters(config *Config) *Filters {
 		config = DefaultConfig
 	}
 	return &Filters{
-		m:    make(map[string][]string),
+		m:    make(indexesMap),
 		conf: config,
 	}
 }
 
 // Add adds new filters with a label.
 func (filters *Filters) Add(label string, indexes ...string) *Filters {
-	filters.m[label] = append(filters.m[label], indexes...)
+	for _, idx := range indexes {
+		if _, ok := filters.m[label]; !ok {
+			filters.m[label] = make(map[string]struct{})
+		}
+		filters.m[label][idx] = struct{}{}
+	}
 	return filters
 }
 
@@ -56,7 +61,7 @@ func (filters *Filters) Build() []string {
 	built := buildIndexes(filters.m, filters.conf.CompositeIdxLabels)
 
 	if len(filters.conf.CompositeIdxLabels) > 1 {
-		ci := createCompositeIndexes(filters.conf.CompositeIdxLabels, filters.m)
+		ci := createCompositeIndexes(filters.conf.CompositeIdxLabels, filters.m, true)
 		built = append(built, ci...)
 	}
 

@@ -2,7 +2,7 @@ package xian
 
 // Indexes is extra indexes for datastore query.
 type Indexes struct {
-	m    map[string][]string // key=label, value=indexes
+	m    indexesMap // key=label, value=indexes
 	conf *Config
 }
 
@@ -12,14 +12,19 @@ func NewIndexes(config *Config) *Indexes {
 		config = DefaultConfig
 	}
 	return &Indexes{
-		m:    make(map[string][]string),
+		m:    make(indexesMap),
 		conf: config,
 	}
 }
 
 // Add adds new indexes with a label.
 func (idxs *Indexes) Add(label string, indexes ...string) *Indexes {
-	idxs.m[label] = append(idxs.m[label], indexes...)
+	for _, idx := range indexes {
+		if _, ok := idxs.m[label]; !ok {
+			idxs.m[label] = make(map[string]struct{})
+		}
+		idxs.m[label][idx] = struct{}{}
+	}
 	return idxs
 }
 
@@ -53,7 +58,7 @@ func (idxs Indexes) Build() []string {
 	built := buildIndexes(idxs.m, nil)
 
 	if len(idxs.conf.CompositeIdxLabels) > 1 {
-		ci := createCompositeIndexes(idxs.conf.CompositeIdxLabels, idxs.m)
+		ci := createCompositeIndexes(idxs.conf.CompositeIdxLabels, idxs.m, false)
 		built = append(built, ci...)
 	}
 
