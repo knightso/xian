@@ -11,7 +11,7 @@ func TestAddFilter(t *testing.T) {
 	filter.Add("label1", "abc dあいbCh", "sample")
 	filter.Add("label2", "abc debch iJあdeN", "sample")
 
-	built := filter.Build()
+	built := filter.MustBuild()
 	assertBuiltFilter(t, built, []string{
 		"label1 abc dあいbCh",
 		"label1 sample",
@@ -30,7 +30,7 @@ func TestAddBigramsFilter(t *testing.T) {
 		expected = append(expected, "label1 "+"a")
 		expected = append(expected, "label2 "+"b")
 
-		built := filter.Build()
+		built := filter.MustBuild()
 		assertBuiltIndex(t, built, expected)
 	})
 
@@ -47,7 +47,7 @@ func TestAddBigramsFilter(t *testing.T) {
 			expected = append(expected, "label2 "+s)
 		}
 
-		built := filter.Build()
+		built := filter.MustBuild()
 		assertBuiltIndex(t, built, expected)
 	})
 }
@@ -66,7 +66,7 @@ func TestAddBiunigramsFilter(t *testing.T) {
 		expected = append(expected, "label2 "+s)
 	}
 
-	built := filter.Build()
+	built := filter.MustBuild()
 	assertBuiltIndex(t, built, expected)
 }
 
@@ -92,7 +92,7 @@ func TestAddAllFilter(t *testing.T) {
 		expected = append(expected, "label3 "+s)
 	}
 
-	built := filter.Build()
+	built := filter.MustBuild()
 	assertBuiltIndex(t, built, expected)
 }
 
@@ -102,7 +102,7 @@ func TestFilterConfigCompositeIdxLabels(t *testing.T) {
 	filter.Add("label2", "b")
 	filter.Add("label3", "c")
 
-	built := filter.Build()
+	built := filter.MustBuild()
 
 	//   c b a
 	//  ------
@@ -124,7 +124,7 @@ func TestFilterConfigSaveNoFiltersIndex(t *testing.T) {
 	t.Run("1つもfilterをAddしていない場合", func(t *testing.T) {
 		filter := NewFilters(&Config{SaveNoFiltersIndex: true})
 
-		built := filter.Build()
+		built := filter.MustBuild()
 
 		assertBuiltIndex(t, built, []string{
 			"__NoFilters__",
@@ -135,7 +135,7 @@ func TestFilterConfigSaveNoFiltersIndex(t *testing.T) {
 		filter := NewFilters(&Config{SaveNoFiltersIndex: true})
 		filter.Add("label1", "a")
 
-		built := filter.Build()
+		built := filter.MustBuild()
 
 		assertBuiltIndex(t, built, []string{
 			"label1 a",

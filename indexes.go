@@ -1,6 +1,10 @@
 package xian
 
-import "strings"
+import (
+	"strings"
+
+	"github.com/pkg/errors"
+)
 
 // Indexes is extra indexes for datastore query.
 type Indexes struct {
@@ -9,13 +13,13 @@ type Indexes struct {
 }
 
 // NewIndexes creates and initializes a new Indexes.
-func NewIndexes(config *Config) *Indexes {
-	if config == nil {
-		config = DefaultConfig
+func NewIndexes(conf *Config) *Indexes {
+	if conf == nil {
+		conf = DefaultConfig
 	}
 	return &Indexes{
 		m:    make(indexesMap),
-		conf: config,
+		conf: conf,
 	}
 }
 
@@ -60,18 +64,34 @@ func (idxs *Indexes) AddSomething(label string, indexes interface{}) *Indexes {
 }
 
 // Build builds indexes to save.
-func (idxs Indexes) Build() []string {
+func (idxs Indexes) Build() ([]string, error) {
 
 	built := buildIndexes(idxs.m, nil)
 
 	if len(idxs.conf.CompositeIdxLabels) > 1 {
-		ci := createCompositeIndexes(idxs.conf.CompositeIdxLabels, idxs.m, false)
-		built = append(built, ci...)
+		cis, err := createCompositeIndexes(idxs.conf.CompositeIdxLabels, idxs.m, false)
+		if err != nil {
+			return nil, err
+		}
+		built = append(built, cis...)
 	}
 
 	if idxs.conf.SaveNoFiltersIndex {
 		built = append(built, IndexNoFilters)
 	}
 
+	if len(built) > MaxIndexesSize {
+		return nil, errors.Errorf("index size exceeds %d", MaxIndexesSize)
+	}
+
+	return built, nil
+}
+
+// MustBuild builds indexes to save and panics with error.
+func (idxs Indexes) MustBuild() []string {
+	built, err := idxs.Build()
+	if err != nil {
+		panic(err)
+	}
 	return built
 }

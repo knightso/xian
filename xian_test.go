@@ -73,8 +73,8 @@ func TestAddIndexAndFilter(t *testing.T) {
 	filter := NewFilters(nil)
 	filter.Add("label1", "abc dあいbCh", "sample")
 
-	builtIndexes := idx.Build()
-	builtFilters := filter.Build()
+	builtIndexes := idx.MustBuild()
+	builtFilters := filter.MustBuild()
 
 	// filter の内容が全て index に存在すること
 	for _, builtFilter := range builtFilters {
@@ -91,8 +91,8 @@ func TestAddBigramsIndexAndFilter(t *testing.T) {
 	filter := NewFilters(nil)
 	filter.AddBigrams("label1", "dあいb") // idx の中間一致
 
-	builtIndexes := idx.Build()
-	builtFilters := filter.Build()
+	builtIndexes := idx.MustBuild()
+	builtFilters := filter.MustBuild()
 
 	// filter の内容が全て index に存在すること
 	for _, builtFilter := range builtFilters {
@@ -109,8 +109,8 @@ func TestAddBiunigramsIndexAndFilter(t *testing.T) {
 	filter := NewFilters(nil)
 	filter.AddBiunigrams("label1", "dあいb") // idx の中間一致
 
-	builtIndexes := idx.Build()
-	builtFilters := filter.Build()
+	builtIndexes := idx.MustBuild()
+	builtFilters := filter.MustBuild()
 
 	// filter の内容が全て index に存在すること
 	for _, builtFilter := range builtFilters {

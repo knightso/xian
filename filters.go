@@ -3,6 +3,8 @@ package xian
 import (
 	"strings"
 	"unicode/utf8"
+
+	"github.com/pkg/errors"
 )
 
 // Filters is filters builder for extra indexes.
@@ -12,13 +14,13 @@ type Filters struct {
 }
 
 // NewFilters creates and initializes a new Filters.
-func NewFilters(config *Config) *Filters {
-	if config == nil {
-		config = DefaultConfig
+func NewFilters(conf *Config) *Filters {
+	if conf == nil {
+		conf = DefaultConfig
 	}
 	return &Filters{
 		m:    make(indexesMap),
-		conf: config,
+		conf: conf,
 	}
 }
 
@@ -62,18 +64,34 @@ func (filters *Filters) AddSomething(label string, indexes interface{}) *Filters
 }
 
 // Build builds indexes to save.
-func (filters *Filters) Build() []string {
+func (filters *Filters) Build() ([]string, error) {
 
 	built := buildIndexes(filters.m, filters.conf.CompositeIdxLabels)
 
 	if len(filters.conf.CompositeIdxLabels) > 1 {
-		ci := createCompositeIndexes(filters.conf.CompositeIdxLabels, filters.m, true)
-		built = append(built, ci...)
+		cis, err := createCompositeIndexes(filters.conf.CompositeIdxLabels, filters.m, true)
+		if err != nil {
+			return nil, err
+		}
+		built = append(built, cis...)
 	}
 
 	if filters.conf.SaveNoFiltersIndex && len(built) == 0 {
 		built = append(built, IndexNoFilters)
 	}
 
+	if len(built) > MaxIndexesSize {
+		return nil, errors.Errorf("index size exceeds %d", MaxIndexesSize)
+	}
+
+	return built, nil
+}
+
+// MustBuild builds indexes to save and panics with error.
+func (filters Filters) MustBuild() []string {
+	built, err := filters.Build()
+	if err != nil {
+		panic(err)
+	}
 	return built
 }

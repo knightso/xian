@@ -4,11 +4,17 @@ import (
 	"bytes"
 	"fmt"
 	"sort"
+
+	"github.com/pkg/errors"
 )
 
 const (
-	// IndexNoFilters is an index to be used for no-filters
+	// IndexNoFilters is an index to be used for no-filters.
 	IndexNoFilters = "__NoFilters__"
+	// MaxIndexesSize is maximum size of indexes.
+	MaxIndexesSize = 512
+	// MaxCompositeIndexLabels maximum number of labels for composite index.
+	MaxCompositeIndexLabels = 8
 )
 
 const (
@@ -27,6 +33,23 @@ type Config struct {
 
 // DefaultConfig is default configuration.
 var DefaultConfig = &Config{}
+
+// ValidateConfig validates Config fields.
+func ValidateConfig(conf *Config) (*Config, error) {
+	if len(conf.CompositeIdxLabels) > MaxCompositeIndexLabels {
+		return nil, errors.Errorf("CompositeIdxLabels size exceeds %d", MaxCompositeIndexLabels)
+	}
+	return conf, nil
+}
+
+// MustValidateConfig validates fields and panics if it's invalid.
+func MustValidateConfig(conf *Config) *Config {
+	conf, err := ValidateConfig(conf)
+	if err != nil {
+		panic(err)
+	}
+	return conf
+}
 
 // common indexes map
 // key=label, value=index set
@@ -66,11 +89,15 @@ func buildIndexes(m indexesMap, labelsToExclude []string) []string {
 // It reduces zig-zag merge join latency.
 // m is indexesMap.
 // forFilters is used for Filters.
-func createCompositeIndexes(labels []string, m indexesMap, forFilters bool) []string {
+func createCompositeIndexes(labels []string, m indexesMap, forFilters bool) ([]string, error) {
+
+	if len(labels) > MaxIndexesSize {
+		return nil, errors.Errorf("CompositeIdxLabels size exceeds %d", MaxCompositeIndexLabels)
+	}
 
 	indexes := make([]string, 0, 64)
 
-	f := func(combi uint16, index string, someNew bool) {
+	f := func(combi uint8, index string, someNew bool) {
 		if forFilters && !someNew {
 			return
 		}
@@ -85,7 +112,7 @@ func createCompositeIndexes(labels []string, m indexesMap, forFilters bool) []st
 
 	// construct recursive funcs at first.
 	// reverse loop for labels so that the first label will be right-end bit.
-	var combiForFilter uint16
+	var combiForFilter uint8
 	for i := len(labels) - 1; i >= 0; i-- {
 		i := i
 		prevF := f
@@ -95,7 +122,7 @@ func createCompositeIndexes(labels []string, m indexesMap, forFilters bool) []st
 			combiForFilter |= 1 << uint(i)
 		}
 
-		f = func(combi uint16, index string, someNew bool) {
+		f = func(combi uint8, index string, someNew bool) {
 			// check process bit for the combi.
 			if combi&(1<<uint(i)) != 0 {
 				tokens := make([]string, 0, len(m[idxLabel]))
@@ -127,16 +154,16 @@ func createCompositeIndexes(labels []string, m indexesMap, forFilters bool) []st
 	if forFilters {
 		f(combiForFilter, "", false)
 	} else {
-		for i := uint16(3); i < (1 << uint(len(labels))); i++ {
+		for i := 3; i < (1 << uint(len(labels))); i++ {
 			if (i & (i - 1)) == 0 {
 				// do not save single index
 				continue
 			}
-			f(i, "", false)
+			f(uint8(i), "", false)
 		}
 	}
 
-	return indexes
+	return indexes, nil
 }
 
 func appendCombinationIndex(indexes, index string) string {

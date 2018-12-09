@@ -11,7 +11,7 @@ func TestAddIndex(t *testing.T) {
 	idx.Add("label1", "abc dあいbCh", "sample")
 	idx.Add("label2", "abc debch iJあdeN", "sample")
 
-	built := idx.Build()
+	built := idx.MustBuild()
 	assertBuiltIndex(t, built, []string{
 		"label1 abc dあいbCh",
 		"label1 sample",
@@ -33,7 +33,7 @@ func TestAddBigrams(t *testing.T) {
 		expected = append(expected, "label2 "+s)
 	}
 
-	built := idx.Build()
+	built := idx.MustBuild()
 	assertBuiltIndex(t, built, expected)
 }
 
@@ -50,7 +50,7 @@ func TestAddBiunigramsIndex(t *testing.T) {
 		expected = append(expected, "label2 "+s)
 	}
 
-	built := idx.Build()
+	built := idx.MustBuild()
 	assertBuiltIndex(t, built, expected)
 }
 
@@ -67,7 +67,7 @@ func TestAddPrefixesIndex(t *testing.T) {
 		expected = append(expected, "label2 "+s)
 	}
 
-	built := idx.Build()
+	built := idx.MustBuild()
 	assertBuiltIndex(t, built, expected)
 }
 
@@ -99,7 +99,7 @@ func TestAddAllIndex(t *testing.T) {
 		expected = append(expected, "label4 "+s)
 	}
 
-	built := idx.Build()
+	built := idx.MustBuild()
 	assertBuiltIndex(t, built, expected)
 }
 
@@ -110,7 +110,7 @@ func TestIndexConfigCompositeIdxLabels(t *testing.T) {
 	idx.Add("label3", "c")
 	idx.Add("label4", "d")
 
-	built := idx.Build()
+	built := idx.MustBuild()
 
 	//   c b a
 	//  ------
@@ -134,7 +134,7 @@ func TestIndexConfigSaveNoFiltersIndex(t *testing.T) {
 	idx := NewIndexes(&Config{SaveNoFiltersIndex: true})
 	idx.Add("label1", "a")
 
-	built := idx.Build()
+	built := idx.MustBuild()
 	assertBuiltIndex(t, built, []string{
 		"label1 a",
 		"__NoFilters__",
