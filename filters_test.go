@@ -111,9 +111,11 @@ func TestFilterConfigCompositeIdxLabels(t *testing.T) {
 	//6  1 1 0
 	//7  1 1 1
 	assertBuiltIndex(t, built, []string{
-		"3 a;b",
-		"5 a;c",
-		"6 b;c",
+		// "3 a;b",
+		// "5 a;c",
+		// "6 b;c",
+
+		// now needs only indexes with all specified labels
 		"7 a;b;c",
 	})
 }
