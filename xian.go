@@ -91,7 +91,7 @@ func buildIndexes(m indexesMap, labelsToExclude []string) []string {
 // forFilters is used for Filters.
 func createCompositeIndexes(labels []string, m indexesMap, forFilters bool) ([]string, error) {
 
-	if len(labels) > MaxIndexesSize {
+	if len(labels) > MaxCompositeIndexLabels {
 		return nil, errors.Errorf("CompositeIdxLabels size exceeds %d", MaxCompositeIndexLabels)
 	}
 
