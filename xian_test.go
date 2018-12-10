@@ -5,10 +5,69 @@ import (
 	"testing"
 )
 
+func TestValidateConfig(t *testing.T) {
+	labels := make([]string, MaxCompositeIndexLabels+1)
+	for i := 0; i < len(labels); i++ {
+		labels[i] = string('a' + i)
+	}
+
+	t.Run("len(CompositeIdxLabels)<=MaxCompositeIndexLabels", func(t *testing.T) {
+		conf := &Config{CompositeIdxLabels: labels[:MaxCompositeIndexLabels]}
+		if _, err := ValidateConfig(conf); err != nil {
+			t.Errorf("expected:error = nil, but was:[%v]\n", err)
+		}
+		if validated, _ := ValidateConfig(conf); validated != conf {
+			t.Errorf("validated, _ := ValidateConfig(conf) expected:validated = conf, but was:validated = %#v\n", validated)
+		}
+	})
+
+	t.Run("len(CompositeIdxLabels)>MaxCompositeIndexLabels", func(t *testing.T) {
+		conf := &Config{CompositeIdxLabels: labels[:MaxCompositeIndexLabels+1]}
+		if _, err := ValidateConfig(conf); err == nil {
+			t.Error("CompositeIdxLabels > MaxCompositeIndexLabels expected:err != nil, but was:err = nil\n")
+		}
+	})
+
+	t.Run("ValidateConfig(DefaultConfig)", func(t *testing.T) {
+		if _, err := ValidateConfig(DefaultConfig); err != nil {
+			t.Errorf("expected:error = nil, but was:error = [%v]\n", err)
+		}
+	})
+}
+
+func TestMustValidateConfig(t *testing.T) {
+	labels := make([]string, MaxCompositeIndexLabels+1)
+	for i := 0; i < len(labels); i++ {
+		labels[i] = string('a' + i)
+	}
+
+	t.Run("CompositeIdxLabels<=MaxCompositeIndexLabels", func(t *testing.T) {
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("expected:not panic, was:panic = [%v]\n", r)
+			}
+		}()
+
+		conf := &Config{CompositeIdxLabels: labels[:MaxCompositeIndexLabels]}
+		MustValidateConfig(conf)
+	})
+
+	t.Run("CompositeIdxLabels>MaxCompositeIndexLabels", func(t *testing.T) {
+		defer func() {
+			if r := recover(); r == nil {
+				t.Error("expected:panic, was:not panic\n")
+			}
+		}()
+
+		conf := &Config{CompositeIdxLabels: labels[:MaxCompositeIndexLabels+1]}
+		MustValidateConfig(conf)
+	})
+}
+
 func TestBiunigrams(t *testing.T) {
 	result := Biunigrams("abc dあいbCh")
 	if len(result) != 15 {
-		t.Errorf("len(result) exected:%d, but was:%d\n", 13, len(result))
+		t.Errorf("len(result) expected:%d, but was:%d\n", 13, len(result))
 	}
 
 	sort.Strings(result)
