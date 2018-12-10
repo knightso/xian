@@ -1,6 +1,8 @@
 package xian
 
 import (
+	"fmt"
+	"reflect"
 	"strings"
 	"unicode/utf8"
 
@@ -60,7 +62,19 @@ func (filters *Filters) AddBiunigrams(label string, s string) *Filters {
 // AddSomething adds new indexes with a label.
 // The indexes can be a slice or a string convertible value.
 func (filters *Filters) AddSomething(label string, indexes interface{}) *Filters {
-	panic("under construction")
+
+	v := reflect.ValueOf(indexes)
+
+	switch v.Kind() {
+	case reflect.Array, reflect.Slice:
+		for i := 0; i < v.Len(); i++ {
+			filters.Add(label, fmt.Sprintf("%v", v.Index(i).Interface()))
+		}
+	default:
+		filters.Add(label, fmt.Sprintf("%v", v.Interface()))
+	}
+
+	return filters
 }
 
 // Build builds indexes to save.

@@ -1,6 +1,8 @@
 package xian
 
 import (
+	"fmt"
+	"reflect"
 	"strings"
 
 	"github.com/pkg/errors"
@@ -60,7 +62,18 @@ func (idxs *Indexes) AddPrefixes(label string, s string) *Indexes {
 // AddSomething adds new indexes with a label.
 // The indexes can be a slice or a string convertible value.
 func (idxs *Indexes) AddSomething(label string, indexes interface{}) *Indexes {
-	panic("under construction")
+	v := reflect.ValueOf(indexes)
+
+	switch v.Kind() {
+	case reflect.Array, reflect.Slice:
+		for i := 0; i < v.Len(); i++ {
+			idxs.Add(label, fmt.Sprintf("%v", v.Index(i).Interface()))
+		}
+	default:
+		idxs.Add(label, fmt.Sprintf("%v", v.Interface()))
+	}
+
+	return idxs
 }
 
 // Build builds indexes to save.
