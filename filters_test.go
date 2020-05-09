@@ -5,6 +5,7 @@ import (
 	"reflect"
 	"sort"
 	"testing"
+	"time"
 )
 
 func TestAddFilter(t *testing.T) {
@@ -87,12 +88,15 @@ func TestAddSomethingFilter(t *testing.T) {
 	filter := NewFilters(nil)
 	filter.AddSomething("label1", []string{"abc dあいbCh", "abc debch iJあdeN"})
 	filter.AddSomething("label2", 123)
+	now := time.Now()
+	filter.AddSomething("label3", now)
 
 	built := filter.MustBuild()
 	assertBuiltFilter(t, built, []string{
 		"label1 abc dあいbCh",
 		"label1 abc debch iJあdeN",
 		"label2 123",
+		fmt.Sprintf("label3 %d", now.Unix()),
 	})
 }
 
