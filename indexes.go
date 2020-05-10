@@ -71,7 +71,7 @@ func (idxs *Indexes) AddSomething(label string, indexes interface{}) *Indexes {
 			idxs.Add(label, fmt.Sprintf("%v", v.Index(i).Interface()))
 		}
 	case timeKind:
-		unix := v.Interface().(time.Time).Unix()
+		unix := v.Interface().(time.Time).UnixNano()
 		idxs.Add(label, fmt.Sprintf("%d", unix))
 	default:
 		idxs.Add(label, fmt.Sprintf("%v", v.Interface()))

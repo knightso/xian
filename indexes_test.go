@@ -85,7 +85,7 @@ func TestAddSomethingIndex(t *testing.T) {
 		"label1 abc dあいbCh",
 		"label1 abc debch iJあdeN",
 		"label2 123",
-		fmt.Sprintf("label3 %d", now.Unix()),
+		fmt.Sprintf("label3 %d", now.UnixNano()),
 	})
 }
 

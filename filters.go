@@ -78,7 +78,7 @@ func (filters *Filters) AddSomething(label string, indexes interface{}) *Filters
 			filters.Add(label, fmt.Sprintf("%v", v.Index(i).Interface()))
 		}
 	case timeKind:
-		unix := v.Interface().(time.Time).Unix()
+		unix := v.Interface().(time.Time).UnixNano()
 		filters.Add(label, fmt.Sprintf("%d", unix))
 	default:
 		filters.Add(label, fmt.Sprintf("%v", v.Interface()))
