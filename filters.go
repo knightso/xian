@@ -65,6 +65,12 @@ func (filters *Filters) AddPrefix(label string, s string) *Filters {
 	return filters.Add(label, s)
 }
 
+// AddSuffix adds a new suffix filter with a label.
+func (filters *Filters) AddSuffix(label string, s string) *Filters {
+	// don't need to split suffixes on filters
+	return filters.Add(label, s)
+}
+
 // AddSomething adds new indexes with a label.
 // The indexes can be a slice or a string convertible value.
 func (filters *Filters) AddSomething(label string, indexes interface{}) *Filters {

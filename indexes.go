@@ -59,6 +59,12 @@ func (idxs *Indexes) AddPrefixes(label string, s string) *Indexes {
 	return idxs
 }
 
+// AddPrefixes adds new prefix indexes with a label.
+func (idxs *Indexes) AddSuffixes(label string, s string) *Indexes {
+	idxs.Add(label, Suffixes(s)...)
+	return idxs
+}
+
 // AddSomething adds new indexes with a label.
 // The indexes can be a slice or a string convertible value.
 func (idxs *Indexes) AddSomething(label string, indexes interface{}) *Indexes {

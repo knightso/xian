@@ -125,6 +125,25 @@ func TestPrefixes(t *testing.T) {
 	assert(t, "result[8]", result[8], "dあいbCh")
 }
 
+func TestSuffixes(t *testing.T) {
+	result := Suffixes("abc dあいbCh")
+	if len(result) != 9 {
+		t.Errorf("len(result) exected:%d, but was:%d\n", 9, len(result))
+	}
+
+	sort.Strings(result)
+
+	assert(t, "result[0]", result[0], "c")
+	assert(t, "result[1]", result[1], "cb")
+	assert(t, "result[2]", result[2], "cba")
+	assert(t, "result[3]", result[3], "h")
+	assert(t, "result[4]", result[4], "hC")
+	assert(t, "result[5]", result[5], "hCb")
+	assert(t, "result[6]", result[6], "hCbい")
+	assert(t, "result[7]", result[7], "hCbいあ")
+	assert(t, "result[8]", result[8], "hCbいあd")
+}
+
 func TestAddIndexAndFilter(t *testing.T) {
 	idx := NewIndexes(nil)
 	idx.Add("label1", "abc dあいbCh", "sample")
