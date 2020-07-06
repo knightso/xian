@@ -88,8 +88,8 @@ func Suffixes(s string) []string {
 
 	tokens := make([]string, 0, 32)
 
-	for pref := range suffixes {
-		tokens = append(tokens, pref)
+	for suf := range suffixes {
+		tokens = append(tokens, suf)
 	}
 
 	return tokens
