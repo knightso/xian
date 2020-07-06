@@ -73,6 +73,23 @@ func TestAddPrefixesIndex(t *testing.T) {
 	assertBuiltIndex(t, built, expected)
 }
 
+func TestAddSuffixesIndex(t *testing.T) {
+	idx := NewIndexes(nil)
+	idx.AddSuffixes("label1", "abc dあいbCh")
+	idx.AddSuffixes("label2", "abc debch iJあdeN")
+
+	var expected []string
+	for _, s := range Suffixes("abc dあいbCh") {
+		expected = append(expected, "label1 "+s)
+	}
+	for _, s := range Suffixes("abc debch iJあdeN") {
+		expected = append(expected, "label2 "+s)
+	}
+
+	built := idx.MustBuild()
+	assertBuiltIndex(t, built, expected)
+}
+
 func TestAddSomethingIndex(t *testing.T) {
 	idx := NewIndexes(nil)
 	idx.AddSomething("label1", []string{"abc dあいbCh", "abc debch iJあdeN"})

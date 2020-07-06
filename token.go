@@ -66,6 +66,43 @@ func Prefixes(s string) []string {
 	return tokens
 }
 
+// Suffixes returns suffix tokens from s.
+func Suffixes(s string) []string {
+	suffixes := make(map[string]struct{})
+
+	runes := make([]rune, 0, 64)
+
+	for _, w := range strings.Split(s, " ") {
+		if w == "" {
+			continue
+		}
+		w = reverse(w)
+
+		runes = runes[0:0]
+
+		for _, c := range w {
+			runes = append(runes, c)
+			suffixes[string(runes)] = struct{}{}
+		}
+	}
+
+	tokens := make([]string, 0, 32)
+
+	for suf := range suffixes {
+		tokens = append(tokens, suf)
+	}
+
+	return tokens
+}
+
+func reverse(s string) string {
+	runes := []rune(s)
+	for i, j := 0, len(runes)-1; i < j; i, j = i+1, j-1 {
+		runes[i], runes[j] = runes[j], runes[i]
+	}
+	return string(runes)
+}
+
 func toBigrams(value string) map[bigram]bool {
 	result := make(map[bigram]bool)
 	var prev rune

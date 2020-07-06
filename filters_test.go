@@ -84,6 +84,18 @@ func TestAddPrefixFilter(t *testing.T) {
 	})
 }
 
+func TestAddSuffixFilter(t *testing.T) {
+	filter := NewFilters(nil)
+	filter.AddSuffix("label1", "abc dあいbCh")
+	filter.AddSuffix("label2", "abc debch iJあdeN")
+
+	built := filter.MustBuild()
+	assertBuiltFilter(t, built, []string{
+		"label1 abc dあいbCh",
+		"label2 abc debch iJあdeN",
+	})
+}
+
 func TestAddSomethingFilter(t *testing.T) {
 	filter := NewFilters(nil)
 	filter.AddSomething("label1", []string{"abc dあいbCh", "abc debch iJあdeN"})
