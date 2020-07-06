@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"reflect"
 	"strings"
+	"time"
 	"unicode/utf8"
 
 	"github.com/pkg/errors"
@@ -76,6 +77,9 @@ func (filters *Filters) AddSomething(label string, indexes interface{}) *Filters
 		for i := 0; i < v.Len(); i++ {
 			filters.Add(label, fmt.Sprintf("%v", v.Index(i).Interface()))
 		}
+	case timeKind:
+		unix := v.Interface().(time.Time).UnixNano()
+		filters.Add(label, fmt.Sprintf("%d", unix))
 	default:
 		filters.Add(label, fmt.Sprintf("%v", v.Interface()))
 	}

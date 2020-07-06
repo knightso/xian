@@ -5,6 +5,7 @@ import (
 	"reflect"
 	"sort"
 	"testing"
+	"time"
 )
 
 func TestAddIndex(t *testing.T) {
@@ -76,12 +77,15 @@ func TestAddSomethingIndex(t *testing.T) {
 	idx := NewIndexes(nil)
 	idx.AddSomething("label1", []string{"abc dあいbCh", "abc debch iJあdeN"})
 	idx.AddSomething("label2", 123)
+	now := time.Now()
+	idx.AddSomething("label3", now)
 
 	built := idx.MustBuild()
 	assertBuiltIndex(t, built, []string{
 		"label1 abc dあいbCh",
 		"label1 abc debch iJあdeN",
 		"label2 123",
+		fmt.Sprintf("label3 %d", now.UnixNano()),
 	})
 }
 

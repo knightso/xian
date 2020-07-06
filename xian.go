@@ -3,7 +3,9 @@ package xian
 import (
 	"bytes"
 	"fmt"
+	"reflect"
 	"sort"
+	"time"
 
 	"github.com/pkg/errors"
 )
@@ -33,6 +35,8 @@ type Config struct {
 
 // DefaultConfig is default configuration.
 var DefaultConfig = &Config{}
+
+var timeKind = reflect.TypeOf(time.Time{}).Kind()
 
 // ValidateConfig validates Config fields.
 func ValidateConfig(conf *Config) (*Config, error) {
