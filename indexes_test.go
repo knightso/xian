@@ -312,6 +312,8 @@ func TestIndexConfigSaveNoFiltersIndex(t *testing.T) {
 }
 
 func assertBuiltIndex(t *testing.T, actual, expected []string) {
+	t.Helper()
+
 	sort.Strings(actual)
 	sort.Strings(expected)
 	if !reflect.DeepEqual(actual, expected) {

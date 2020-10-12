@@ -7,6 +7,7 @@ It's designed espesially for Google Cloud Datastore or Cloud Firestore in Datast
 ## Features
 
 * prefix/suffix/partial match search
+* IN search
 * reduce composite indexes(esp. for Cloud Datastore)
 
 ## Note
@@ -31,7 +32,18 @@ var bookIndexesConfig = xian.MustValidateConfig(&xian.Config{
 	IgnoreCase:         true, // search case-insensitive
 	SaveNoFiltersIndex: true, // always save 'NoFilters' index
 })
+
+// configure IN-filter
+var statusInBuilder *xian.InBuilder = xian.NewInBuilder()
+
+var (
+    BookStatusUnpublished = statusInBuilder.Bit()
+    BookStatusPublished = statusInBuilder.Bit()
+    BookStatusDiscontinued = statusInBuilder.Bit()
+)
 ```
+
+This configuration should be used to initialize both Indexes and Filters.
 
 ### Label Constants
 
@@ -50,8 +62,6 @@ const (
 )
 ```
 
-This `Config` should be used to initialize both Indexes and Filters.
-
 ### Save indexes
 
 ```go
@@ -62,12 +72,7 @@ idxs.AddBiunigrams(BookQueryLabelTitlePartial, book.Title)
 idxs.AddPrefixes(BookQueryLabelTitlePrefix, book.Title)
 idxs.AddSuffixes(BookQueryLabelTitleSuffix, book.Title)
 idxs.AddSomething(BookQueryLabelIsHobby, book.Category == "sports" || book.Category == "cooking")
-
-for i := 1; i < 1<<uint(len(BookStatuses))+1; i++ {
-	if i&int(book.Status) != 0 {
-		idxs.AddSomething(BookQueryLabelStatusIN, i)
-	}
-}
+idxs.Add(BookQueryLabelStatusIN, statusInBuilder.Indexes(BookStatusUnpublished)...)
 
 switch {
 case book.Price < 3000:
@@ -90,14 +95,14 @@ if err != nil {
 // save book
 ```
 
-### Search
+### Search (example of Cloud Datastore)
 
 ```go
 q := datastore.NewQuery("Book")
 
 filters := xian.NewFilters(bookIndexesConfig)
     .AddSomething(BookQueryLabelIsHolly, true)
-    .AddSomething(BookQueryLabelStatusIN, BookStatusUnpublished|BookStatusPublished)
+    .Add(BookQueryLabelStatusIN, statusInBuilder.Filter(BookStatusUnpublished, BookStatusPublished))
     .Add(BookQueryLabelPriceRange, "5000<=p<10000")
     .AddBigrams(BookQueryLabelTitlePartial, title)
     .AddBiunigrams(BookQueryLabelTitlePartial, title)
