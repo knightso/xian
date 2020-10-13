@@ -37,9 +37,9 @@ var bookIndexesConfig = xian.MustValidateConfig(&xian.Config{
 var statusInBuilder *xian.InBuilder = xian.NewInBuilder()
 
 var (
-    BookStatusUnpublished = statusInBuilder.Bit()
-    BookStatusPublished = statusInBuilder.Bit()
-    BookStatusDiscontinued = statusInBuilder.Bit()
+    BookStatusUnpublished = statusInBuilder.NewBit()
+    BookStatusPublished = statusInBuilder.NewBit()
+    BookStatusDiscontinued = statusInBuilder.NewBit()
 )
 ```
 
