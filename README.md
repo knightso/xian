@@ -100,14 +100,13 @@ if err != nil {
 ```go
 q := datastore.NewQuery("Book")
 
-filters := xian.NewFilters(bookIndexesConfig)
-    .AddSomething(BookQueryLabelIsHolly, true)
-    .Add(BookQueryLabelStatusIN, statusInBuilder.Filter(BookStatusUnpublished, BookStatusPublished))
-    .Add(BookQueryLabelPriceRange, "5000<=p<10000")
-    .AddBigrams(BookQueryLabelTitlePartial, title)
-    .AddBiunigrams(BookQueryLabelTitlePartial, title)
-    .AddPrefix(BookQueryLabelTitlePrefix, title)
-    .AddSuffix(BookQueryLabelTitleSuffix, title)
+filters := xian.NewFilters(bookIndexesConfig).
+    AddSomething(BookQueryLabelIsHolly, true).
+    Add(BookQueryLabelStatusIN, statusInBuilder.Filter(BookStatusUnpublished, BookStatusPublished)).
+    Add(BookQueryLabelPriceRange, "5000<=p<10000").
+    AddBigrams(BookQueryLabelTitlePartial, title).
+    AddBiunigrams(BookQueryLabelTitlePartial, title).
+    AddSuffix(BookQueryLabelTitleSuffix, title)
 
 
 built, err := filters.Build()
