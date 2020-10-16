@@ -93,7 +93,7 @@ func (filters *Filters) AddSomething(label string, indexes interface{}) *Filters
 	return filters
 }
 
-// Build builds indexes to save.
+// Build builds filters to save.
 func (filters *Filters) Build() ([]string, error) {
 
 	built := buildIndexes(filters.m, filters.conf.CompositeIdxLabels)
@@ -117,7 +117,7 @@ func (filters *Filters) Build() ([]string, error) {
 	return built, nil
 }
 
-// MustBuild builds indexes to save and panics with error.
+// MustBuild builds filters to save and panics with error.
 func (filters Filters) MustBuild() []string {
 	built, err := filters.Build()
 	if err != nil {
