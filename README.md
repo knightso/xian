@@ -95,7 +95,7 @@ if err != nil {
 // save book
 ```
 
-### Search (example of Cloud Datastore)
+### Search (example for Cloud Datastore)
 
 ```go
 q := datastore.NewQuery("Book")
